@@ -7,11 +7,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#[link(name="alert", vers="0.1")];
-#[crate_type="lib"];
-
 #[cfg(target_os="macos")]
-extern mod core_foundation;
+extern mod core_foundation = "rust-core-foundation";
 #[cfg(target_os="macos")]
 extern mod cocoa;
 
