@@ -9,28 +9,35 @@
 
 //! This is not a typical test harness, because alerts require user input.
 
-use Alert;
-use AlertMethods;
+extern mod alert = "rust-alert";
 
-use cocoa::appkit;
-use core::task::PlatformThread;
-use core::task;
+#[cfg(target_os="macos")]
+extern mod cocoa;
 
-#[main]
-pub fn main() {
-    let mut builder = task::task();
-    builder.sched_mode(PlatformThread);
-    do builder.spawn {
-        init();
+use alert::Alert;
+use alert::AlertMethods;
 
-        let mut alert: Alert = AlertMethods::new("All units destroyed.");
-        alert.add_prompt();
-        alert.run()
+#[start]
+fn start(argc: int, argv: **u8) -> int {
+    do std::rt::start_on_main_thread(argc, argv) {
+        main()
     }
+}
+
+fn main() {
+    init();
+
+    let mut alert: Alert = AlertMethods::new("All units destroyed.");
+    alert.add_prompt();
+    alert.run()
 }
 
 #[cfg(target_os="macos")]
 fn init() {
+    use cocoa::appkit;
     let _ = appkit::NSApp();
 }
 
+#[cfg(not(target_os="macos"))]
+fn init() {
+}
