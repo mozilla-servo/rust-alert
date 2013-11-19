@@ -13,6 +13,7 @@ use cocoa::appkit::{NSPoint, NSRect, NSSize};
 use cocoa::base::{objc_getClass, sel_registerName};
 use cocoa::base;
 use std::cast::{transmute, transmute_copy};
+use core_foundation::base::TCFType;
 use core_foundation::string::CFString;
 
 /// The low-level alert type.
@@ -31,20 +32,20 @@ impl AlertMethods for Alert {
     #[fixed_stack_segment]
     fn new(message_text: &str) -> Alert {
         unsafe {
-            let alert_string = CFString::new(message_text);
-            let cancel_string = CFString::new_static("Cancel");
-            let empty_string = CFString::new_static("");
+            let alert_string: CFString = FromStr::from_str(message_text).unwrap();
+            let cancel_string = CFString::from_static_string("Cancel");
+            let empty_string = CFString::from_static_string("");
             let class = objc_getClass(transmute(&"NSAlert"[0]));
             let selector = sel_registerName(transmute(&"alertWithMessageText:defaultButton:\
                                                         alternateButton:otherButton:\
                                                         informativeTextWithFormat:"[0]));
-            let nsalert = base::msg_send_id_id_id_id_id_id(class,
-                                                           selector,
-                                                           transmute_copy(&alert_string.contents),
-                                                           transmute(0),
-                                                           transmute_copy(&cancel_string.contents),
-                                                           transmute(0),
-                                                           transmute_copy(&empty_string.contents));
+            let nsalert = base::invoke_msg_id_id_id_id_id_id(class,
+                                                             selector,
+                                                             transmute_copy(&alert_string),
+                                                             transmute(0),
+                                                             transmute_copy(&cancel_string),
+                                                             transmute(0),
+                                                             transmute_copy(&empty_string));
             Alert {
                 nsalert: transmute(nsalert),
                 nstextfield: None,
@@ -58,7 +59,7 @@ impl AlertMethods for Alert {
             // [NSTextField alloc]
             let class = objc_getClass(transmute(&"NSTextField"[0]));
             let selector = sel_registerName(transmute(&"alloc"[0]));
-            let nstextfield = base::msg_send_id(class, selector);
+            let nstextfield = base::invoke_msg_id(class, selector);
 
             // [nstextfield initWithFrame: NSMakeRect(0, 0, 200, 24)]
             let selector = sel_registerName(transmute(&"initWithFrame:"[0]));
@@ -66,15 +67,15 @@ impl AlertMethods for Alert {
                 origin: NSPoint::new(0.0, 0.0),
                 size: NSSize::new(200.0, 24.0),
             };
-            let nstextfield = base::msg_send_id_NSRect(nstextfield, selector, frame);
+            let nstextfield = base::invoke_msg_id_NSRect(nstextfield, selector, &frame);
 
             // [nsalert setAccessoryView: nstextfield];
             let selector = sel_registerName(transmute(&"setAccessoryView:"[0]));
-            base::msg_send_void_id(transmute(self.nsalert), selector, nstextfield);
+            base::invoke_msg_void_id(transmute(self.nsalert), selector, nstextfield);
 
             // [nsalert layout];
             let selector = sel_registerName(transmute(&"layout"[0]));
-            base::msg_send_void(transmute(self.nsalert), selector);
+            base::invoke_msg_void(transmute(self.nsalert), selector);
 
             self.nstextfield = Some(transmute(nstextfield))
         }
@@ -84,7 +85,7 @@ impl AlertMethods for Alert {
     fn run(&self) {
         unsafe {
             let selector = sel_registerName(transmute(&"runModal"[0]));
-            base::msg_send_void(transmute(self.nsalert), selector)
+            base::invoke_msg_void(transmute(self.nsalert), selector)
         }
     }
 
@@ -96,8 +97,9 @@ impl AlertMethods for Alert {
             match self.nstextfield {
                 None => fail!("No prompt!"),
                 Some(nstextfield) => {
-                    let string = base::msg_send_id(transmute(nstextfield), selector);
-                    CFString::wrap_shared(transmute(string)).to_str()
+                    let string = base::invoke_msg_id(transmute(nstextfield), selector);
+                    let result: CFString = TCFType::wrap_under_get_rule(transmute(string));
+                    result.to_str()
                 }
             }
         }
