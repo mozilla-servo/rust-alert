@@ -8,8 +8,8 @@
 // except according to those terms.
 
 use AlertMethods;
-use std::rt::io;
-use std::rt::io::buffered::BufferedReader;
+use std::io;
+use std::io::buffered::BufferedReader;
 
 /// An alert.
 pub struct Alert {
