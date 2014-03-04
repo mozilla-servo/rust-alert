@@ -20,13 +20,13 @@ use core::task;
 pub fn main() {
     let mut builder = task::task();
     builder.sched_mode(PlatformThread);
-    do builder.spawn {
+    builder.spawn(|| {
         init();
 
         let mut alert: Alert = AlertMethods::new("All units destroyed.");
         alert.add_prompt();
         alert.run()
-    }
+    });
 }
 
 #[cfg(target_os="macos")]
