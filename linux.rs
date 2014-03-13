@@ -9,7 +9,7 @@
 
 use AlertMethods;
 use std::io;
-use std::io::buffered::BufferedReader;
+use std::io::BufferedReader;
 
 /// An alert.
 pub struct Alert {
@@ -23,9 +23,12 @@ impl AlertMethods for Alert {
     }
 
     fn add_prompt(&mut self) {
-        print("URL: ");
-        self.url = BufferedReader::new(io::stdin())
-            .read_line().expect("Could not read URL from stdin");
+        println!("URL: ");
+        self.url = match BufferedReader::new(io::stdin()).read_line() {
+            Ok(res) => res,
+            _ => fail!("Could not read URL from stdin"),
+            
+        }
     }
 
     fn run(&self) {
