@@ -19,7 +19,7 @@ pub struct Alert {
 impl AlertMethods for Alert {
     fn new(_: &str) -> Alert {
         // TODO: Use a glfw window for prompt
-        Alert { url: ~"" }
+        Alert { url: "".to_owned() }
     }
 
     fn add_prompt(&mut self) {
