@@ -42,6 +42,6 @@ pub trait AlertMethods {
     /// Runs the alert modally.
     fn run(&self);
     /// Returns the value of the prompt.
-    fn prompt_value(&self) -> ~str;
+    fn prompt_value(&self) -> String;
 }
 

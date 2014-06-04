@@ -13,7 +13,7 @@ use std::io::BufferedReader;
 
 /// An alert.
 pub struct Alert {
-    url: ~str,
+    url: String,
 }
 
 impl AlertMethods for Alert {
@@ -27,14 +27,13 @@ impl AlertMethods for Alert {
         self.url = match BufferedReader::new(io::stdin()).read_line() {
             Ok(res) => res,
             _ => fail!("Could not read URL from stdin"),
-            
         }
     }
 
     fn run(&self) {
     }
 
-    fn prompt_value(&self) -> ~str {
+    fn prompt_value(&self) -> String {
         self.url.clone()
     }
 }

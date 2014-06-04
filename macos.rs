@@ -12,7 +12,7 @@ use AlertMethods;
 use cocoa::appkit::{NSPoint, NSRect, NSSize};
 use cocoa::base::{objc_getClass, sel_registerName};
 use cocoa::base;
-use std::cast::{transmute, transmute_copy};
+use std::mem::{transmute, transmute_copy};
 use std::from_str::FromStr;
 use core_foundation::base::TCFType;
 use core_foundation::string::CFString;
@@ -87,7 +87,7 @@ impl AlertMethods for Alert {
         }
     }
 
-    fn prompt_value(&self) -> ~str {
+    fn prompt_value(&self) -> String {
         unsafe {
             // [nstextfield stringValue]
             let selector = sel_registerName(transmute(&"stringValue"[0]));
