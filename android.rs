@@ -28,7 +28,7 @@ impl AlertMethods for Alert {
 
     fn prompt_value(&self) -> ~str {
         // TODO
-        "".to_owned()
+        "".to_string()
     }
 }
 
