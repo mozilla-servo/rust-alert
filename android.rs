@@ -26,7 +26,7 @@ impl AlertMethods for Alert {
         // TODO
     }
 
-    fn prompt_value(&self) -> ~str {
+    fn prompt_value(&self) -> String {
         // TODO
         "".to_string()
     }
