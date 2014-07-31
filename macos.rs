@@ -24,8 +24,8 @@ struct NSTextField;
 
 /// An alert.
 pub struct Alert {
-    nsalert: *NSAlert,
-    nstextfield: Option<*NSTextField>,
+    nsalert: *mut NSAlert,
+    nstextfield: Option<*mut NSTextField>,
 }
 
 impl AlertMethods for Alert {
@@ -35,16 +35,16 @@ impl AlertMethods for Alert {
             let alert_string: CFString = FromStr::from_str(message_text).unwrap();
             let cancel_string = CFString::from_static_string("Cancel");
             let empty_string = CFString::from_static_string("");
-            let class = objc_getClass(transmute(&"NSAlert"[0]));
+            let class = objc_getClass(transmute(&"NSAlert".as_bytes()[0]));
             let selector = sel_registerName(transmute(&"alertWithMessageText:defaultButton:\
                                                         alternateButton:otherButton:\
-                                                        informativeTextWithFormat:"[0]));
+                                                        informativeTextWithFormat:".as_bytes()[0]));
             let nsalert = base::invoke_msg_id_id_id_id_id_id(class,
                                                              selector,
                                                              transmute_copy(&alert_string),
-                                                             transmute(0),
+                                                             transmute(0u),
                                                              transmute_copy(&cancel_string),
-                                                             transmute(0),
+                                                             transmute(0u),
                                                              transmute_copy(&empty_string));
             Alert {
                 nsalert: transmute(nsalert),
@@ -56,12 +56,12 @@ impl AlertMethods for Alert {
     fn add_prompt(&mut self) {
         unsafe {
             // [NSTextField alloc]
-            let class = objc_getClass(transmute(&"NSTextField"[0]));
-            let selector = sel_registerName(transmute(&"alloc"[0]));
+            let class = objc_getClass(transmute(&"NSTextField".as_bytes()[0]));
+            let selector = sel_registerName(transmute(&"alloc".as_bytes()[0]));
             let nstextfield = base::invoke_msg_id(class, selector);
 
             // [nstextfield initWithFrame: NSMakeRect(0, 0, 200, 24)]
-            let selector = sel_registerName(transmute(&"initWithFrame:"[0]));
+            let selector = sel_registerName(transmute(&"initWithFrame:".as_bytes()[0]));
             let frame = NSRect {
                 origin: NSPoint::new(0.0, 0.0),
                 size: NSSize::new(200.0, 24.0),
@@ -69,11 +69,11 @@ impl AlertMethods for Alert {
             let nstextfield = base::invoke_msg_id_NSRect(nstextfield, selector, &frame);
 
             // [nsalert setAccessoryView: nstextfield];
-            let selector = sel_registerName(transmute(&"setAccessoryView:"[0]));
+            let selector = sel_registerName(transmute(&"setAccessoryView:".as_bytes()[0]));
             base::invoke_msg_void_id(transmute(self.nsalert), selector, nstextfield);
 
             // [nsalert layout];
-            let selector = sel_registerName(transmute(&"layout"[0]));
+            let selector = sel_registerName(transmute(&"layout".as_bytes()[0]));
             base::invoke_msg_void(transmute(self.nsalert), selector);
 
             self.nstextfield = Some(transmute(nstextfield))
@@ -82,7 +82,7 @@ impl AlertMethods for Alert {
 
     fn run(&self) {
         unsafe {
-            let selector = sel_registerName(transmute(&"runModal"[0]));
+            let selector = sel_registerName(transmute(&"runModal".as_bytes()[0]));
             base::invoke_msg_void(transmute(self.nsalert), selector)
         }
     }
@@ -90,13 +90,13 @@ impl AlertMethods for Alert {
     fn prompt_value(&self) -> String {
         unsafe {
             // [nstextfield stringValue]
-            let selector = sel_registerName(transmute(&"stringValue"[0]));
+            let selector = sel_registerName(transmute(&"stringValue".as_bytes()[0]));
             match self.nstextfield {
                 None => fail!("No prompt!"),
                 Some(nstextfield) => {
                     let string = base::invoke_msg_id(transmute(nstextfield), selector);
                     let result: CFString = TCFType::wrap_under_get_rule(transmute(string));
-                    result.to_str()
+                    result.to_string()
                 }
             }
         }
