@@ -7,6 +7,9 @@ AR ?= ar
 RUSTC ?= rustc
 RUSTFLAGS ?=
 EXT_DEPS ?=
+RUSTDOC ?= rustdoc
+RUSTDOC_FLAGS ?=
+RUSTDOC_TARGET ?= doc
 
 RUST_SRC=$(shell find $(VPATH)/. -type f -name '*.rs')
 
@@ -25,6 +28,12 @@ alert-test: alert.rc $(RUST_SRC) $(EXT_DEPS)
 
 check: alert-test
 	./alert-test
+
+.PHONY: doc
+doc: $(RUSTDOC_TARGET)/alert/index.html
+
+$(RUSTDOC_TARGET)/alert/index.html: alert.rc $(RUST_SRC) $(EXT_DEPS)
+	$(RUSTDOC) $(RUSTDOC_FLAGS) $< -o $(RUSTDOC_TARGET)
 
 .PHONY: clean
 clean:
