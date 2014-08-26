@@ -11,7 +11,7 @@ RUSTDOC ?= rustdoc
 RUSTDOC_FLAGS ?=
 RUSTDOC_TARGET ?= doc
 
-RUST_SRC=$(shell find $(VPATH)/. -type f -name '*.rs')
+RUST_SRC=$(shell find $(VPATH)/src -type f -name '*.rs')
 
 .PHONY: all
 all:	librustalert.dummy
@@ -19,11 +19,11 @@ all:	librustalert.dummy
 %.o:	%.c
 	$(CC) $< -o $@ -c $(CFLAGS)
 
-librustalert.dummy: alert.rc $(RUST_SRC) $(EXT_DEPS)
+librustalert.dummy: src/lib.rs $(RUST_SRC) $(EXT_DEPS)
 	$(RUSTC) $(RUSTFLAGS) $< --out-dir .
 	touch $@
 
-alert-test: alert.rc $(RUST_SRC) $(EXT_DEPS)
+alert-test: src/lib.rs $(RUST_SRC) $(EXT_DEPS)
 	$(RUSTC) $(RUSTFLAGS) $< -o $@ --test
 
 check: alert-test
@@ -32,7 +32,7 @@ check: alert-test
 .PHONY: doc
 doc: $(RUSTDOC_TARGET)/alert/index.html
 
-$(RUSTDOC_TARGET)/alert/index.html: alert.rc $(RUST_SRC) $(EXT_DEPS)
+$(RUSTDOC_TARGET)/alert/index.html: src/lib.rs $(RUST_SRC) $(EXT_DEPS)
 	$(RUSTDOC) $(RUSTDOC_FLAGS) $< -o $(RUSTDOC_TARGET)
 
 .PHONY: clean
