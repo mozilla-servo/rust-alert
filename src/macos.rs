@@ -92,7 +92,7 @@ impl AlertMethods for Alert {
             // [nstextfield stringValue]
             let selector = sel_registerName(transmute(&"stringValue".as_bytes()[0]));
             match self.nstextfield {
-                None => fail!("No prompt!"),
+                None => panic!("No prompt!"),
                 Some(nstextfield) => {
                     let string = base::invoke_msg_id(transmute(nstextfield), selector);
                     let result: CFString = TCFType::wrap_under_get_rule(transmute(string));
