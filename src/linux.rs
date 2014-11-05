@@ -26,7 +26,7 @@ impl AlertMethods for Alert {
         println!("URL: ");
         self.url = match BufferedReader::new(io::stdin()).read_line() {
             Ok(res) => res,
-            _ => fail!("Could not read URL from stdin"),
+            _ => panic!("Could not read URL from stdin"),
         }
     }
 
